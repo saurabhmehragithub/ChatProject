@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spring Boot Chat Application</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="username-page">
+        <div class="username-page-container">
+            <h1 class="title">Enter Chat Room</h1>
+            <form id="usernameForm" name="usernameForm">
+                <div class="form-group">
+                    <input type="text" id="name" placeholder="Enter your username" autocomplete="off" class="form-control" required />
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="accent username-submit">Start Chatting</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="chat-page" class="hidden">
+        <div class="chat-container">
+            <div class="chat-header">
+                <h2>Spring Boot WebSocket Chat</h2>
+            </div>
+            <div class="connecting">
+                Connecting...
+            </div>
+            <div class="chat-area">
+                <label class="chat-label">Chat</label>
+                <ul id="messageArea"></ul>
+            </div>
+            <form id="messageForm" name="messageForm">
+                <div id="filePreview" class="hidden file-preview">
+                    <span id="fileName"></span>
+                    <button type="button" id="removeFile" class="remove-file">×</button>
+                </div>
+                <div class="form-group">
+                    <div class="input-group">
+                        <input type="text" id="message" placeholder="Type a message..." autocomplete="off" class="form-control" />
+                        <input type="file" id="fileInput" accept=".pdf,.jpg,.jpeg" class="hidden" />
+                        <button type="button" id="attachButton" class="attach-btn" title="Attach file (PDF, JPG, JPEG)">📎</button>
+                        <button type="submit" class="accent">Send</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.1/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
