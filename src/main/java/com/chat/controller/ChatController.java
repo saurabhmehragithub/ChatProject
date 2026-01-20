@@ -2,6 +2,7 @@ package com.chat.controller;
 
 import com.chat.model.ChatMessage;
 import com.chat.config.WebSocketEventListener;
+import com.chat.repository.ChatMessageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
@@ -9,6 +10,8 @@ import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,6 +27,9 @@ public class ChatController {
     
     @Autowired
     private SimpMessagingTemplate messagingTemplate;
+    
+    @Autowired
+    private ChatMessageRepository chatMessageRepository;
 
     @MessageMapping("/chat.sendMessage")
     @SendTo("/topic/public")
@@ -32,6 +38,11 @@ public class ChatController {
         if (chatMessage.getFileName() != null) {
             logger.info("Message has file attachment: {} (URL: {})", chatMessage.getFileName(), chatMessage.getFileUrl());
         }
+        
+        // Save message to database
+        chatMessageRepository.save(chatMessage);
+        logger.info("Message saved to database with ID: {}", chatMessage.getId());
+        
         return chatMessage;
     }
 
@@ -66,7 +77,16 @@ public class ChatController {
         // Add user to active users list
         webSocketEventListener.addUser(headerAccessor.getSessionId(), chatMessage.getSender());
         
+        // Save JOIN message to database
+        chatMessageRepository.save(chatMessage);
+        
         logger.info("User joined: {}", chatMessage.getSender());
         return chatMessage;
+    }
+    
+    @GetMapping("/api/messages")
+    @ResponseBody
+    public List<ChatMessage> getAllMessages() {
+        return chatMessageRepository.findAllByOrderByTimestampAsc();
     }
 }

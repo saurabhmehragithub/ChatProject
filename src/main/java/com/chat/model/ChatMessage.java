@@ -1,14 +1,30 @@
 package com.chat.model;
 
+import jakarta.persistence.*;
+import java.time.LocalDateTime;
+
+@Entity
+@Table(name = "chat_messages")
 public class ChatMessage {
     
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    
+    @Enumerated(EnumType.STRING)
     private MessageType type;
+    
+    @Column(columnDefinition = "TEXT")
     private String content;
+    
     private String sender;
     private String fileName;
     private String fileType;
     private String fileUrl; // URL to download the file
     private String fileId; // Unique file identifier
+    
+    @Column(nullable = false)
+    private LocalDateTime timestamp;
 
     public enum MessageType {
         CHAT,
@@ -17,12 +33,30 @@ public class ChatMessage {
     }
 
     public ChatMessage() {
+        this.timestamp = LocalDateTime.now();
     }
 
     public ChatMessage(MessageType type, String content, String sender) {
         this.type = type;
         this.content = content;
         this.sender = sender;
+        this.timestamp = LocalDateTime.now();
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public LocalDateTime getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(LocalDateTime timestamp) {
+        this.timestamp = timestamp;
     }
 
     public MessageType getType() {
