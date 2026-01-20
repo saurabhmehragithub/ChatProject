@@ -3,3 +3,6 @@ com\chat\controller\ChatController.class
 com\chat\model\ChatMessage$MessageType.class
 com\chat\model\ChatMessage.class
 com\chat\ChatApplication.class
+com\chat\controller\FileUploadController$FileData.class
+com\chat\config\WebSocketEventListener.class
+com\chat\controller\FileUploadController.class

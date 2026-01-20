@@ -12,6 +12,8 @@ var attachButton = document.querySelector('#attachButton');
 var filePreview = document.querySelector('#filePreview');
 var fileNameDisplay = document.querySelector('#fileName');
 var removeFileButton = document.querySelector('#removeFile');
+var userList = document.querySelector('#userList');
+var userCount = document.querySelector('#userCount');
 
 var stompClient = null;
 var username = null;
@@ -41,6 +43,9 @@ function connect(event) {
 function onConnected() {
     // Subscribe to the Public Topic
     stompClient.subscribe('/topic/public', onMessageReceived);
+    
+    // Subscribe to user-specific queue for existing user notifications
+    stompClient.subscribe('/user/queue/messages', onMessageReceived);
 
     // Tell your username to the server
     stompClient.send("/app/chat.addUser",
@@ -136,6 +141,12 @@ function uploadFileAndSendMessage(messageContent) {
 function onMessageReceived(payload) {
     var message = JSON.parse(payload.body);
     console.log('Message received:', message);
+
+    // Handle user list updates
+    if(message.type === 'USER_LIST') {
+        updateUserList(message.users);
+        return;
+    }
 
     var messageElement = document.createElement('li');
 
@@ -276,3 +287,33 @@ removeFileButton.addEventListener('click', clearFileSelection);
 
 usernameForm.addEventListener('submit', connect, true)
 messageForm.addEventListener('submit', sendMessage, true)
+
+// Function to update the active users list
+function updateUserList(users) {
+    userList.innerHTML = '';
+    userCount.textContent = users.length;
+    
+    users.forEach(function(user) {
+        var userElement = document.createElement('li');
+        userElement.classList.add('user-item');
+        
+        var avatar = document.createElement('span');
+        avatar.classList.add('user-avatar');
+        avatar.textContent = user[0].toUpperCase();
+        avatar.style.backgroundColor = getAvatarColor(user);
+        
+        var userName = document.createElement('span');
+        userName.classList.add('user-name');
+        userName.textContent = user;
+        
+        // Highlight current user
+        if(user === username) {
+            userElement.classList.add('current-user');
+            userName.textContent = user + ' (You)';
+        }
+        
+        userElement.appendChild(avatar);
+        userElement.appendChild(userName);
+        userList.appendChild(userElement);
+    });
+}
