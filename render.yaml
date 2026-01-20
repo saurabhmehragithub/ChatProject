@@ -1,9 +1,8 @@
 services:
   - type: web
     name: chat-application
-    env: java
-    buildCommand: mvn clean package -DskipTests
-    startCommand: java -jar target/chat-application-1.0.0.jar
+    env: docker
+    dockerfilePath: ./Dockerfile
     envVars:
-      - key: JAVA_VERSION
-        value: 17
+      - key: PORT
+        value: 10000
