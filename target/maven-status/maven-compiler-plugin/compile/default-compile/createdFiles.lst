@@ -1,8 +1,13 @@
-com\chat\config\WebSocketConfig.class
 com\chat\controller\ChatController.class
-com\chat\model\ChatMessage$MessageType.class
 com\chat\model\ChatMessage.class
-com\chat\ChatApplication.class
 com\chat\controller\FileUploadController$FileData.class
 com\chat\config\WebSocketEventListener.class
+com\chat\model\User.class
 com\chat\controller\FileUploadController.class
+com\chat\repository\UserRepository.class
+com\chat\config\WebSocketConfig.class
+com\chat\controller\AuthController.class
+com\chat\model\ChatMessage$MessageType.class
+com\chat\ChatApplication.class
+com\chat\config\DataInitializer.class
+com\chat\repository\ChatMessageRepository.class

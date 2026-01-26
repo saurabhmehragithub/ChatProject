@@ -14,6 +14,7 @@ var fileNameDisplay = document.querySelector('#fileName');
 var removeFileButton = document.querySelector('#removeFile');
 var userList = document.querySelector('#userList');
 var userCount = document.querySelector('#userCount');
+var loginError = document.querySelector('#login-error');
 
 var stompClient = null;
 var username = null;
@@ -25,18 +26,57 @@ var colors = [
 ];
 
 function connect(event) {
-    username = document.querySelector('#name').value.trim();
-
-    if(username) {
-        usernamePage.classList.add('hidden');
-        chatPage.classList.remove('hidden');
-
-        var socket = new SockJS('/ws');
-        stompClient = Stomp.over(socket);
-
-        stompClient.connect({}, onConnected, onError);
-    }
     event.preventDefault();
+    
+    username = document.querySelector('#name').value.trim();
+    var password = document.querySelector('#password').value;
+
+    if(username && password) {
+        // Hide any previous error
+        loginError.classList.add('hidden');
+        
+        // Authenticate user
+        fetch('/api/auth/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                username: username,
+                password: password
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Authentication successful, connect to WebSocket
+                usernamePage.classList.add('hidden');
+                chatPage.classList.remove('hidden');
+
+                var socket = new SockJS('/ws');
+                stompClient = Stomp.over(socket);
+
+                stompClient.connect({}, onConnected, onError);
+            } else {
+                // Authentication failed
+                showLoginError(data.message || 'Invalid username or password');
+            }
+        })
+        .catch(error => {
+            console.error('Login error:', error);
+            showLoginError('Login failed. Please try again.');
+        });
+    }
+}
+
+function showLoginError(message) {
+    loginError.textContent = message;
+    loginError.classList.remove('hidden');
+    
+    // Auto-hide error after 5 seconds
+    setTimeout(function() {
+        loginError.classList.add('hidden');
+    }, 5000);
 }
 
 
@@ -287,6 +327,166 @@ removeFileButton.addEventListener('click', clearFileSelection);
 
 usernameForm.addEventListener('submit', connect, true)
 messageForm.addEventListener('submit', sendMessage, true)
+
+// Logout button functionality
+var logoutButton = document.querySelector('#logoutButton');
+if (logoutButton) {
+    logoutButton.addEventListener('click', function() {
+        // Disconnect from WebSocket
+        if (stompClient !== null) {
+            stompClient.disconnect();
+        }
+        
+        // Clear username
+        username = null;
+        
+        // Hide chat page and show login page
+        chatPage.classList.add('hidden');
+        usernamePage.classList.remove('hidden');
+        
+        // Clear form fields
+        document.querySelector('#name').value = '';
+        document.querySelector('#password').value = '';
+        messageInput.value = '';
+        messageArea.innerHTML = '';
+        userList.innerHTML = '';
+        userCount.textContent = '0';
+        
+        // Hide any error messages
+        if (loginError) {
+            loginError.classList.add('hidden');
+        }
+        
+        console.log('User logged out successfully');
+    });
+}
+
+// Last Week Modal functionality
+var lastWeekLink = document.querySelector('#viewLastWeekLink');
+var lastWeekModal = document.querySelector('#lastWeekModal');
+var closeModal = document.querySelector('.close-modal');
+var lastWeekMessages = document.querySelector('#lastWeekMessages');
+
+// Open modal when link is clicked
+if (lastWeekLink) {
+    lastWeekLink.addEventListener('click', function(event) {
+        event.preventDefault();
+        openLastWeekModal();
+    });
+}
+
+// Close modal when X is clicked
+if (closeModal) {
+    closeModal.addEventListener('click', function() {
+        lastWeekModal.classList.add('hidden');
+    });
+}
+
+// Close modal when clicking outside
+window.addEventListener('click', function(event) {
+    if (event.target === lastWeekModal) {
+        lastWeekModal.classList.add('hidden');
+    }
+});
+
+function openLastWeekModal() {
+    lastWeekModal.classList.remove('hidden');
+    lastWeekMessages.innerHTML = '<div class=\"loading\">Loading messages...</div>';
+    
+    // Fetch last week's messages
+    fetch('/api/messages/lastweek')
+        .then(response => response.json())
+        .then(messages => {
+            displayLastWeekMessages(messages);
+        })
+        .catch(error => {
+            console.error('Error fetching last week messages:', error);
+            lastWeekMessages.innerHTML = '<div class=\"error\">Failed to load messages. Please try again.</div>';
+        });
+}
+
+function displayLastWeekMessages(messages) {
+    lastWeekMessages.innerHTML = '';
+    
+    if (messages.length === 0) {
+        lastWeekMessages.innerHTML = '<div class=\"no-messages\">No messages from the last week.</div>';
+        return;
+    }
+    
+    var messageList = document.createElement('ul');
+    messageList.classList.add('modal-message-list');
+    
+    messages.forEach(function(message) {
+        if (message.type === 'CHAT') {
+            var messageElement = document.createElement('li');
+            messageElement.classList.add('modal-message-item');
+            
+            var messageHeader = document.createElement('div');
+            messageHeader.classList.add('modal-message-header');
+            
+            var senderElement = document.createElement('strong');
+            senderElement.textContent = message.sender;
+            senderElement.style.color = getAvatarColor(message.sender);
+            
+            var timeElement = document.createElement('span');
+            timeElement.classList.add('modal-message-time');
+            timeElement.textContent = formatTimestamp(message.timestamp);
+            
+            messageHeader.appendChild(senderElement);
+            messageHeader.appendChild(timeElement);
+            
+            var contentElement = document.createElement('div');
+            contentElement.classList.add('modal-message-content');
+            contentElement.textContent = message.content || '';
+            
+            messageElement.appendChild(messageHeader);
+            messageElement.appendChild(contentElement);
+            
+            // Add file info if present
+            if (message.fileName) {
+                var fileElement = document.createElement('div');
+                fileElement.classList.add('modal-message-file');
+                
+                var fileIcon = document.createElement('span');
+                fileIcon.textContent = '📎 ';
+                
+                if (message.fileUrl) {
+                    var fileLink = document.createElement('a');
+                    fileLink.href = message.fileUrl;
+                    fileLink.textContent = message.fileName;
+                    fileLink.target = '_blank';
+                    fileElement.appendChild(fileIcon);
+                    fileElement.appendChild(fileLink);
+                } else {
+                    fileElement.textContent = '📎 ' + message.fileName;
+                }
+                
+                messageElement.appendChild(fileElement);
+            }
+            
+            messageList.appendChild(messageElement);
+        }
+    });
+    
+    lastWeekMessages.appendChild(messageList);
+}
+
+function formatTimestamp(timestamp) {
+    var date = new Date(timestamp);
+    var now = new Date();
+    var today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    var messageDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    
+    var timeStr = date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+    
+    if (messageDate.getTime() === today.getTime()) {
+        return 'Today at ' + timeStr;
+    } else if (messageDate.getTime() === today.getTime() - 86400000) {
+        return 'Yesterday at ' + timeStr;
+    } else {
+        return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + ' at ' + timeStr;
+    }
+}
 
 // Function to update the active users list
 function updateUserList(users) {

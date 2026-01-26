@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Controller
@@ -88,5 +89,12 @@ public class ChatController {
     @ResponseBody
     public List<ChatMessage> getAllMessages() {
         return chatMessageRepository.findAllByOrderByTimestampAsc();
+    }
+    
+    @GetMapping("/api/messages/lastweek")
+    @ResponseBody
+    public List<ChatMessage> getLastWeekMessages() {
+        LocalDateTime oneWeekAgo = LocalDateTime.now().minusWeeks(1);
+        return chatMessageRepository.findMessagesSince(oneWeekAgo);
     }
 }
