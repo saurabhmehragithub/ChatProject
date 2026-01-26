@@ -26,7 +26,19 @@ public class DataInitializer implements CommandLineRunner {
             userRepository.save(user2);
             System.out.println("Created user: Neha");
         }
+
+        if (userRepository.findByUsername("Rajiv").isEmpty()) {
+            User user3 = new User("Rajiv", "rajiv");
+            userRepository.save(user3);
+            System.out.println("Created user: Rajiv");
+        }
+
+        if (userRepository.findByUsername("Pralhad").isEmpty()) {
+            User user4 = new User("Pralhad", "pralhad");
+            userRepository.save(user4);
+            System.out.println("Created user: Pralhad");
+        }
         
-        System.out.println("Data initialization complete. Available users: Saurabh, Neha");
+        System.out.println("Data initialization complete. Available users: Saurabh, Neha, Rajiv, Pralhad");
     }
 }
