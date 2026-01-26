@@ -8,18 +8,13 @@ services:
         value: 10000
       - key: DATABASE_URL
         fromDatabase:
-          name: chat-db
+          name: SaurabhChatDB
           property: connectionString
       - key: DATABASE_USERNAME
         fromDatabase:
-          name: chat-db
+          name: SaurabhChatDB
           property: user
       - key: DATABASE_PASSWORD
         fromDatabase:
-          name: chat-db
+          name: SaurabhChatDB
           property: password
-
-databases:
-  - name: chat-db
-    databaseName: chatdb
-    user: chatuser
