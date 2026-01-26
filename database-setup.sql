@@ -42,6 +42,7 @@ ON CONFLICT (username) DO NOTHING;
 INSERT INTO users (username, password) VALUES ('Neha', 'neha')
 ON CONFLICT (username) DO NOTHING;
 
+
 -- Create index on username for better query performance
 CREATE INDEX IF NOT EXISTS idx_users_username ON users(username);
 
