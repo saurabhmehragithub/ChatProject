@@ -23,6 +23,11 @@ public class ChatMessage {
     private String fileUrl; // URL to download the file
     private String fileId; // Unique file identifier
     
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "session_id")
+    @com.fasterxml.jackson.annotation.JsonIgnore
+    private ChatSession session;
+    
     @Column(nullable = false)
     private LocalDateTime timestamp;
 
@@ -113,5 +118,13 @@ public class ChatMessage {
 
     public void setFileId(String fileId) {
         this.fileId = fileId;
+    }
+    
+    public ChatSession getSession() {
+        return session;
+    }
+    
+    public void setSession(ChatSession session) {
+        this.session = session;
     }
 }

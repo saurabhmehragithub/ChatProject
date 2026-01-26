@@ -390,8 +390,8 @@ function openLastWeekModal() {
     lastWeekModal.classList.remove('hidden');
     lastWeekMessages.innerHTML = '<div class=\"loading\">Loading messages...</div>';
     
-    // Fetch last week's messages
-    fetch('/api/messages/lastweek')
+    // Fetch last week's messages for the current user
+    fetch('/api/messages/lastweek?username=' + encodeURIComponent(username))
         .then(response => response.json())
         .then(messages => {
             displayLastWeekMessages(messages);

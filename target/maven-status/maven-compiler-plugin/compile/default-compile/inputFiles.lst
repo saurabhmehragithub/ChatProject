@@ -2,10 +2,12 @@ C:\Users\smehra\JavaCoding\ChatProject\src\main\java\com\chat\config\DataInitial
 C:\Users\smehra\JavaCoding\ChatProject\src\main\java\com\chat\repository\ChatMessageRepository.java
 C:\Users\smehra\JavaCoding\ChatProject\src\main\java\com\chat\model\User.java
 C:\Users\smehra\JavaCoding\ChatProject\src\main\java\com\chat\model\ChatMessage.java
-C:\Users\smehra\JavaCoding\ChatProject\src\main\java\com\chat\controller\AuthController.java
-C:\Users\smehra\JavaCoding\ChatProject\src\main\java\com\chat\ChatApplication.java
 C:\Users\smehra\JavaCoding\ChatProject\src\main\java\com\chat\controller\FileUploadController.java
 C:\Users\smehra\JavaCoding\ChatProject\src\main\java\com\chat\config\WebSocketConfig.java
 C:\Users\smehra\JavaCoding\ChatProject\src\main\java\com\chat\controller\ChatController.java
 C:\Users\smehra\JavaCoding\ChatProject\src\main\java\com\chat\config\WebSocketEventListener.java
 C:\Users\smehra\JavaCoding\ChatProject\src\main\java\com\chat\repository\UserRepository.java
+C:\Users\smehra\JavaCoding\ChatProject\src\main\java\com\chat\model\ChatSession.java
+C:\Users\smehra\JavaCoding\ChatProject\src\main\java\com\chat\controller\AuthController.java
+C:\Users\smehra\JavaCoding\ChatProject\src\main\java\com\chat\repository\ChatSessionRepository.java
+C:\Users\smehra\JavaCoding\ChatProject\src\main\java\com\chat\ChatApplication.java
