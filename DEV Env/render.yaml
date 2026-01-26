@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: chat-application
+    env: docker
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: PORT
+        value: 10000
+      # You'll need to add these manually in Render dashboard
+      # or link to your SaurabhChatDB database
